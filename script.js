@@ -7,20 +7,31 @@ window.addEventListener('beforeunload', function () {
     let timeSpent = (endTime - startTime) / 1000; // Time spent in seconds
     console.log('Time spent on the site:', timeSpent, 'seconds');
 
-    // Send this data to your survey page
-    let returnTo = 'https://forms.gle/B3oJvxfaR5sVVwGH6'; // Your survey URL
+    // Redirect back to the survey with the timeSpent and consentChoice as URL parameters
+    let consentChoice = 'No Choice'; // Default value in case consent is not selected
+    let returnTo = 'https://docs.google.com/forms/d/e/1FAIpQLSeKokknrjvk8q1OZRTtoLUEMDtpEjcQHm_YwI_FFxrHWVWNyw/viewform?usp=pp_url'; // Your pre-filled form URL
+    
+    // Create the pre-filled URL for Google Forms with timeSpent and consentChoice
     let url = new URL(returnTo);
-    url.searchParams.set('timeSpent', timeSpent); // Append the timeSpent as a query param
+    url.searchParams.set('entry.822237019', timeSpent); // 'entry.822237019' is the field ID for "Time Spent"
+    url.searchParams.set('entry.1218982656', consentChoice); // 'entry.1218982656' is the field ID for "Consent Choice"
+    
+    // Redirect the participant to the pre-filled form
     window.location.href = url;
 });
 
 // Function to handle the user's cookie consent choices
 function handleConsent(choice) {
     let consentChoice = choice; // The user's consent choice: 'accept', 'reject', or 'customize'
-    let returnTo = 'https://forms.gle/B3oJvxfaR5sVVwGH6'; // Your survey URL
+    let returnTo = 'https://docs.google.com/forms/d/e/1FAIpQLSeKokknrjvk8q1OZRTtoLUEMDtpEjcQHm_YwI_FFxrHWVWNyw/viewform?usp=pp_url'; // Your pre-filled form URL
+    
+    // Create the pre-filled URL for Google Forms with timeSpent and consentChoice
     let url = new URL(returnTo);
-    url.searchParams.set('consentChoice', consentChoice); // Add the consent choice as a query param
-    window.location.href = url; // Redirect the participant back to the survey page
+    url.searchParams.set('entry.822237019', timeSpent); // 'entry.822237019' is the field ID for "Time Spent"
+    url.searchParams.set('entry.1218982656', consentChoice); // 'entry.1218982656' is the field ID for "Consent Choice"
+    
+    // Redirect the participant to the pre-filled form
+    window.location.href = url;
 }
 
 // Example: When the user clicks 'Accept'
