@@ -265,6 +265,10 @@
             const rejectAllCookiesBtn = document.getElementById('rejectAllCookies');
             const overlay = document.getElementById('overlay');
 
+            // Track the time when the cookie consent modal is shown
+            let cookieStartTime = Date.now();
+            let userDecision = null;  // 'accept', 'reject', or 'manage'
+            
             // Show cookie consent popup if cookies are not accepted yet
             if (!localStorage.getItem('cookiesAccepted')) {
                 cookieConsent.style.display = 'block';
@@ -273,16 +277,22 @@
 
             // Accept cookies
             acceptCookiesBtn.addEventListener('click', function () {
+                userDecision = 'accept';
                 localStorage.setItem('cookiesAccepted', true);
+                localStorage.setItem('cookieDecisionTime', Date.now() - cookieStartTime);  // Save time spent
                 cookieConsent.style.display = 'none';
                 overlay.style.display = 'none';
+                sendSurveyData(userDecision);
             });
 
             // Reject cookies
             rejectCookiesBtn.addEventListener('click', function () {
+                userDecision = 'reject';
                 localStorage.setItem('cookiesAccepted', false);
+                localStorage.setItem('cookieDecisionTime', Date.now() - cookieStartTime);  // Save time spent
                 cookieConsent.style.display = 'none';
                 overlay.style.display = 'none';
+                sendSurveyData(userDecision);
             });
 
             // Manage cookies
@@ -291,33 +301,48 @@
                 overlay.style.display = 'block';
             });
 
-            // Save preferences
+            // Save preferences in cookie settings
             savePreferencesBtn.addEventListener('click', function () {
+                const analyticsCookies = document.getElementById('analyticsCookies').checked;
+                localStorage.setItem('analyticsCookies', analyticsCookies);
+                userDecision = 'manage';
+                localStorage.setItem('cookieDecisionTime', Date.now() - cookieStartTime);  // Save time spent
                 cookieSettingsModal.style.display = 'none';
                 overlay.style.display = 'none';
+                sendSurveyData(userDecision);
             });
 
             // Allow all cookies
             allowAllCookiesBtn.addEventListener('click', function () {
                 localStorage.setItem('cookiesAccepted', true);
+                localStorage.setItem('cookieDecisionTime', Date.now() - cookieStartTime);  // Save time spent
                 cookieSettingsModal.style.display = 'none';
                 overlay.style.display = 'none';
+                sendSurveyData(userDecision);
             });
 
             // Reject all cookies
             rejectAllCookiesBtn.addEventListener('click', function () {
                 localStorage.setItem('cookiesAccepted', false);
+                localStorage.setItem('cookieDecisionTime', Date.now() - cookieStartTime);  // Save time spent
                 cookieSettingsModal.style.display = 'none';
                 overlay.style.display = 'none';
+                sendSurveyData(userDecision);
             });
 
-            // Close the modal when clicking outside of it
+            // Close the cookie settings modal if the overlay is clicked
             overlay.addEventListener('click', function () {
                 cookieSettingsModal.style.display = 'none';
                 overlay.style.display = 'none';
             });
+
+            // Function to send data to the survey form
+            function sendSurveyData(decision) {
+                const timeSpent = localStorage.getItem('cookieDecisionTime');
+                const surveyURL = "https://docs.google.com/forms/d/e/1FAIpQLSeKokknrjvk8q1OZRTtoLUEMDtpEjcQHm_YwI_FFxrHWVWNyw/viewform?usp=pp_url&entry.822237019=" + decision + "&entry.121898265=" + timeSpent;
+                window.open(surveyURL, '_blank');  // Open the survey in a new tab
+            }
         });
     </script>
-
 </body>
 </html>
